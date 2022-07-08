@@ -87,12 +87,13 @@ module.exports.updateProfile = (req, res) => {
     }
     res.send({ data: user })})
   .catch(err => {
-    console.log(err.name)
-    if (err.name === 'ValidationError') {
-      return res.status(profileUpdateError.statusCode).send({
-        message: profileUpdateError.message
-      })
-    } else if (err.name === 'CastError') {
+    // console.log(err.name)
+    // if (err.name === 'ValidationError') {
+    //   return res.status(profileUpdateError.statusCode).send({
+    //     message: profileUpdateError.message
+    //   })
+    // } else
+    if (err.name === 'CastError') {
       return res.send({
         message: notFoundError.message,
         status: notFoundError.statusCode
