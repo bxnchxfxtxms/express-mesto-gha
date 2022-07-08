@@ -45,7 +45,7 @@ module.exports.getUser = (req, res) => {
     _id: user.id
   }))
   .catch(err => {
-    if (err.name === 'TypeError' || 'CastError') {
+    if (err.name === 'TypeError') {
       return res.send({
         message: notFoundError.message,
         status: notFoundError.statusCode
@@ -65,9 +65,8 @@ module.exports.createUser = (req, res) => {
   .then(user => res.send({ data: user }))
   .catch(err => {
     if (err.name === 'ValidationError') {
-      return res.send({
-        message: validationError.message,
-        status: validationError.statusCode
+      return res.status(validationError.statusCode).send({
+        message: validationError.message
       })
     }
     return res.send({
