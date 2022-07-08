@@ -24,8 +24,9 @@ class NotFoundError extends Error {
   }
 }
 
-const profileUpdateError = new ValidationError("Переданы некорректные данные приобновлении профиля")
-const avatarUpdateError = new ValidationError("Переданы некорректные данные приобновлении аватара")
+const incorrectUserIdError = new ValidationError("Передан некорректный id для поиска пользователя")
+const profileUpdateError = new ValidationError("Переданы некорректные данные при обновлении профиля")
+const avatarUpdateError = new ValidationError("Переданы некорректные данные при обновлении аватара")
 const validationError = new ValidationError("Переданы некорректные данные при создании пользователя")
 const notFoundError = new NotFoundError("Пользователь с указанным id не найден")
 const defaultError = new DefaultError("Произошла ошибка")
@@ -49,15 +50,19 @@ module.exports.getUser = (req, res) => {
     _id: user.id
   }))
   .catch(err => {
-    if (err.name === 'TypeError' || 'CastError') {
+    if (err.name === 'TypeError') {
       return res.status(notFoundError.statusCode).send({
         message: notFoundError.message
       })
-    }
+    } else if (err.name === 'CastError')
+    return res.status(incorrectUserIdError.statusCode).send({
+      message: incorrectUserIdError.message
+    })
     return res.status(defaultError.statusCode).send({
       message: defaultError.message
     })
-})
+
+  })
 }
 
 module.exports.createUser = (req, res) => {
