@@ -69,9 +69,9 @@ module.exports.createUser = (req, res) => {
         message: validationError.message
       })
     }
-    return res.status(defaultError.statusCode).send({
-      message: defaultError.message
-    })
+    // return res.status(defaultError.statusCode).send({
+    //   message: defaultError.message
+    // })
   })
 }
 
