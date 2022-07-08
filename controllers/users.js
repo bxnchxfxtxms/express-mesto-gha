@@ -33,7 +33,11 @@ const defaultError = new DefaultError("Произошла ошибка")
 module.exports.getUsers = (req, res) => {
   User.find({})
   .then(users => res.send({ data: users }))
-  .catch(() => res.status(500).send({ message: 'Произошла ошибка' }))
+  .catch(() => {
+    return res.status(defaultError.statusCode).send({
+      message: defaultError.message
+    })
+  })
 }
 
 module.exports.getUser = (req, res) => {
@@ -45,15 +49,13 @@ module.exports.getUser = (req, res) => {
     _id: user.id
   }))
   .catch(err => {
-    if (err.name === 'TypeError') {
-      return res.send({
-        message: notFoundError.message,
-        status: notFoundError.statusCode
+    if (err.name === 'TypeError' || 'CastError') {
+      return res.status(notFoundError.statusCode).send({
+        message: notFoundError.message
       })
     }
-    return res.send({
-      message: defaultError.message,
-      status: defaultError.statusCode
+    return res.status(defaultError.statusCode).send({
+      message: defaultError.message
     })
 })
 }
@@ -69,9 +71,9 @@ module.exports.createUser = (req, res) => {
         message: validationError.message
       })
     }
-    // return res.status(defaultError.statusCode).send({
-    //   message: defaultError.message
-    // })
+    return res.status(defaultError.statusCode).send({
+      message: defaultError.message
+    })
   })
 }
 
@@ -87,21 +89,13 @@ module.exports.updateProfile = (req, res) => {
     }
     res.send({ data: user })})
   .catch(err => {
-    // console.log(err.name)
-    // if (err.name === 'ValidationError') {
-    //   return res.status(profileUpdateError.statusCode).send({
-    //     message: profileUpdateError.message
-    //   })
-    // } else
     if (err.name === 'CastError') {
-      return res.send({
-        message: notFoundError.message,
-        status: notFoundError.statusCode
+      return res.status(notFoundError.statusCode).send({
+        message: notFoundError.message
       })
     }
-    return res.send({
-      message: defaultError.message,
-      status: defaultError.statusCode
+    return res.status(defaultError.statusCode).send({
+      message: defaultError.message
     })
   })
 }
@@ -114,19 +108,16 @@ module.exports.updateAvatar = (req, res) => {
   .catch(err => {
     console.log(err.name)
     if (err.name === 'ValidationError') {
-      return res.send({
-        message: avatarUpdateError.message,
-        status: avatarUpdateError.statusCode
+      return res.status(avatarUpdateError.statusCode).send({
+        message: avatarUpdateError.message
       })
     } else if (err.name === 'CastError') {
-      return res.send({
-        message: notFoundError.message,
-        status: notFoundError.statusCode
+      return res.status(notFoundError.statusCode).send({
+        message: notFoundError.message
       })
     }
-    return res.send({
-      message: defaultError.message,
-      status: defaultError.statusCode
+    return res.status(defaultError.statusCode).send({
+      message: defaultError.message
     })
   })
 }
