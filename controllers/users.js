@@ -69,9 +69,8 @@ module.exports.createUser = (req, res) => {
         message: validationError.message
       })
     }
-    return res.send({
-      message: defaultError.message,
-      status: defaultError.statusCode
+    return res.status(defaultError.statusCode).send({
+      message: defaultError.message
     })
   })
 }
@@ -80,13 +79,18 @@ module.exports.updateProfile = (req, res) => {
   const { name, about } = req.body
 
   User.findByIdAndUpdate(req.user._id, { name, about })
-  .then(user => res.send({ data: user }))
+  .then(user => {
+    if ((name.length <= 2 || name.length >= 30) || (about.length <=2 || about.length >= 30)) {
+      return res.status(profileUpdateError.statusCode).send({
+        message: profileUpdateError.message
+      })
+    }
+    res.send({ data: user })})
   .catch(err => {
     console.log(err.name)
     if (err.name === 'ValidationError') {
-      return res.send({
-        message: profileUpdateError.message,
-        status: profileUpdateError.statusCode
+      return res.status(profileUpdateError.statusCode).send({
+        message: profileUpdateError.message
       })
     } else if (err.name === 'CastError') {
       return res.send({
