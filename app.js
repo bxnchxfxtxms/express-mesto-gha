@@ -1,7 +1,18 @@
 const path = require('path');
 const express = require('express');
 const mongoose = require('mongoose');
-const bodyParser = require('body-parser')
+const bodyParser = require('body-parser');
+const process = require('process');
+
+class NotFoundError extends Error {
+  constructor(message) {
+    super(message)
+    this.name = 'NotFoundError'
+    this.statusCode = 404
+  }
+}
+
+const linkNotFoundError = new NotFoundError("Адрес не найден")
 
 const { PORT = 3000 } = process.env;
 const app = express();
@@ -17,6 +28,17 @@ temporaryAuthorization = (req, res, next) => {
   }
   next()
 }
+
+checkRoute = (req, res, next) => {
+  if (req.path.split('/')[1] !== 'users' && req.path.split('/')[1] !== 'cards') {
+    return res.status(linkNotFoundError.statusCode).send({
+      message: linkNotFoundError.message
+    })
+  }
+  next()
+}
+
+app.use(checkRoute)
 
 app.use(temporaryAuthorization);
 app.use('/users', require('./routes/users'));
