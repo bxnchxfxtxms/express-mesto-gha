@@ -63,7 +63,7 @@ module.exports.deleteCard = (req, res) => {
     console.log(!card)
     if (!card) {
       return res.status(cardDeleteError.statusCode).send({
-        messge: cardDeleteError.message
+        message: cardDeleteError.message
       })
     }
     res.send({ data: card })
@@ -71,7 +71,7 @@ module.exports.deleteCard = (req, res) => {
   .catch(err => {
     if (err.name === 'CastError') {
       return res.status(cardDeleteError.statusCode).send({
-        messge: cardDeleteError.message
+        message: cardDeleteError.message
       })
     }
     return res.status(defaultError.statusCode).send({
