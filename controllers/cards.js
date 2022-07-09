@@ -26,8 +26,8 @@ class NotFoundError extends Error {
 
 const cardDeleteError = new NotFoundError("Карточка с указанным id не найдена")
 const cardLikeError = new NotFoundError("Передан несуществующий id карточки")
-const validationError = new ValidationError("Переданы некорректные данные при создании карточки")
-const incorrectLikeDataError = new ValidationError("Переданы некорректные данные для постановки снятия лайка")
+const validationError = new ValidationError("Переданы некорректные данные при создании/удалении карточки")
+const incorrectLikeDataError = new ValidationError("Переданы некорректные данные для постановки/снятия лайка")
 const defaultError = new DefaultError("Произошла ошибка")
 
 module.exports.getCards = (req, res) => {
@@ -70,8 +70,8 @@ module.exports.deleteCard = (req, res) => {
   })
   .catch(err => {
     if (err.name === 'CastError') {
-      return res.status(cardDeleteError.statusCode).send({
-        message: cardDeleteError.message
+      return res.status(validationError.statusCode).send({
+        message: validationError.message
       })
     }
     return res.status(defaultError.statusCode).send({
