@@ -106,15 +106,16 @@ module.exports.updateProfile = (req, res) => {
 }
 
 module.exports.updateAvatar = (req, res) => {
-  const { newAvatar } = req.body;
-
-  User.findByIdAndUpdate(req.user._id, { newAvatar })
-  .then(user => res.send({
+  const { avatar } = req.body;
+  User.findByIdAndUpdate(req.user._id, { avatar })
+  .then(user =>{
+    console.log(avatar)
+    res.send({
     name: user.name,
     about: user.about,
-    avatar: newAvatar,
+    avatar: avatar,
     _id: user.id
-  }))
+  })})
   .catch(err => {
     console.log(err.name)
     if (err.name === 'ValidationError') {
