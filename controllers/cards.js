@@ -1,8 +1,33 @@
 const Card = require('../models/card');
 
+class DefaultError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = 'DefaultError';
+    this.statusCode = 500;
+  }
+}
+
+class ValidationError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = 'ValidationError'
+    this.statusCode = 400
+  }
+}
+
+class NotFoundError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = 'NotFoundError'
+    this.statusCode = 404
+  }
+}
+
+const defaultError = new DefaultError("Произошла ошибка")
+
 module.exports.getCards = (req, res) => {
   Card.find({})
-  // .populate('user')
   .then(cards => res.send({ data: cards }))
   .catch(() => res.status(500).send({ message: 'Произошла ошибка' }))
 }
