@@ -68,7 +68,13 @@ module.exports.createUser = (req, res) => {
   const { name, about, avatar } = req.body;
 
   User.create({ name, about, avatar })
-  .then(user => res.send({ data: user }))
+  .then(user =>
+    res.send({
+    name: user.name,
+    about: user.about,
+    avatar: user.avatar,
+    _id: user.id
+  }))
   .catch(err => {
     if (err.name === 'ValidationError') {
       return res.status(validationError.statusCode).send({
@@ -86,7 +92,7 @@ module.exports.updateProfile = (req, res) => {
 
   User.findByIdAndUpdate(req.user._id, { name, about }, { new: true })
   .then(user => {
-    if (name.length <= 2 || about.length <= 2) {
+    if (name.length <= 2 && about.length <= 2) {
       return res.status(profileUpdateError.statusCode).send({
         message: profileUpdateError.message
       })
