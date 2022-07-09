@@ -61,7 +61,6 @@ module.exports.getUser = (req, res) => {
     return res.status(defaultError.statusCode).send({
       message: defaultError.message
     })
-
   })
 }
 
