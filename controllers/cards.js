@@ -102,19 +102,28 @@ module.exports.likeCard = (req, res) => {
       message: defaultError.message
     })
   })
-  //   if (err.name === 'CastError') {
-  //     return res.status(cardLikeError.statusCode).send({
-  //       messge: cardLikeError.message
-  //     })
-  //   }
-  //   return res.status(defaultError.statusCode).send({
-  //     message: defaultError.message
-  //   })
-  // })
 }
 
-module.exports.dislikeCard = (req, res) => Card.findByIdAndUpdate(
-  req.params.id,
-  { $pull: { likes: req.user._id } },
-  { new: true },
-)
+module.exports.dislikeCard = (req, res) => {
+  Card.findByIdAndUpdate(req.params.id, { $pull: { likes: req.user._id } }, { new: true })
+  .then(card => {
+    console.log(!card)
+    if (!card) {
+      return res.status(cardLikeError.statusCode).send({
+        message: cardLikeError.message
+      })
+    }
+    res.send({ data: card })
+  })
+  .catch(err => {
+    console.log(err.name)
+    if (err.name === 'CastError') {
+      return res.status(incorrectLikeDataError.statusCode).send({
+        message: incorrectLikeDataError.message
+      })
+    }
+    return res.status(defaultError.statusCode).send({
+      message: defaultError.message
+    })
+  })
+}
