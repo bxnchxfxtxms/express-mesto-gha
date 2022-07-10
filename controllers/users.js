@@ -90,14 +90,21 @@ module.exports.createUser = (req, res) => {
 module.exports.updateProfile = (req, res) => {
   const { name, about } = req.body
 
+  checkLength = item => {
+    if (item) {
+      return item.length <= 2 || item.length >= 30
+    }
+  }
+
   User.findByIdAndUpdate(req.user._id, { name, about }, { new: true })
   .then(user => {
-    if (name.length <= 2 && about.length <= 2) {
-      return res.status(profileUpdateError.statusCode).send({
-        message: profileUpdateError.message
-      })
-    }
-    res.send({ data: user })})
+      if (checkLength(name) || checkLength(about)) {
+        return res.status(profileUpdateError.statusCode).send({
+          message: profileUpdateError.message
+        })
+      }
+    res.send({ data: user })
+  })
   .catch(err => {
     if (err.name === 'CastError') {
       return res.status(notFoundError.statusCode).send({
