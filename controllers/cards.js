@@ -44,7 +44,13 @@ module.exports.createCard = (req, res) => {
   const { name, link } = req.body;
 
   Card.create({ name, link, owner: req.user._id })
-  .then(card => res.send({ data: card }))
+  .then(card => res.send({
+    _id: card._id,
+    name: card.name,
+    link: card.link,
+    owner: card.owner,
+    likes: card.likes
+    }))
   .catch(err => {
     if (err.name === 'ValidationError') {
       return res.status(validationError.statusCode).send({
@@ -60,13 +66,18 @@ module.exports.createCard = (req, res) => {
 module.exports.deleteCard = (req, res) => {
   Card.findByIdAndRemove(req.params.id)
   .then(card => {
-    console.log(!card)
     if (!card) {
       return res.status(cardDeleteError.statusCode).send({
         message: cardDeleteError.message
       })
     }
-    res.send({ data: card })
+    res.send({
+      _id: card._id,
+      name: card.name,
+      link: card.link,
+      owner: card.owner,
+      likes: card.likes
+      })
   })
   .catch(err => {
     if (err.name === 'CastError') {
@@ -83,16 +94,20 @@ module.exports.deleteCard = (req, res) => {
 module.exports.likeCard = (req, res) => {
   Card.findByIdAndUpdate(req.params.id, { $addToSet: { likes: req.user._id } }, { new: true })
   .then(card => {
-    console.log(!card)
     if (!card) {
       return res.status(cardLikeError.statusCode).send({
         message: cardLikeError.message
       })
     }
-    res.send({ data: card })
+    res.send({
+      _id: card._id,
+      name: card.name,
+      link: card.link,
+      owner: card.owner,
+      likes: card.likes
+      })
   })
   .catch(err => {
-    console.log(err.name)
     if (err.name === 'CastError') {
       return res.status(incorrectLikeDataError.statusCode).send({
         message: incorrectLikeDataError.message
@@ -107,16 +122,20 @@ module.exports.likeCard = (req, res) => {
 module.exports.dislikeCard = (req, res) => {
   Card.findByIdAndUpdate(req.params.id, { $pull: { likes: req.user._id } }, { new: true })
   .then(card => {
-    console.log(!card)
     if (!card) {
       return res.status(cardLikeError.statusCode).send({
         message: cardLikeError.message
       })
     }
-    res.send({ data: card })
+    res.send({
+      _id: card._id,
+      name: card.name,
+      link: card.link,
+      owner: card.owner,
+      likes: card.likes
+      })
   })
   .catch(err => {
-    console.log(err.name)
     if (err.name === 'CastError') {
       return res.status(incorrectLikeDataError.statusCode).send({
         message: incorrectLikeDataError.message

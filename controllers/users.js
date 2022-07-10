@@ -103,7 +103,12 @@ module.exports.updateProfile = (req, res) => {
           message: profileUpdateError.message
         })
       }
-    res.send({ data: user })
+      res.send({
+        name: user.name,
+        about: user.about,
+        avatar: user.avatar,
+        _id: user.id
+      })
   })
   .catch(err => {
     if (err.name === 'CastError') {
@@ -128,7 +133,6 @@ module.exports.updateAvatar = (req, res) => {
     _id: user.id
   }))
   .catch(err => {
-    console.log(err.name)
     if (err.name === 'ValidationError') {
       return res.status(avatarUpdateError.statusCode).send({
         message: avatarUpdateError.message
