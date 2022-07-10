@@ -1,8 +1,11 @@
 const User = require('../models/user');
 
-const NOT_FOUND_ERROR_CODE = 404;
-const VALIDATION_ERROR_CODE = 400;
-const DEFAULT_ERROR_CODE = 500;
+const {
+  NOT_FOUND_ERROR_CODE,
+  VALIDATION_ERROR_CODE,
+  DEFAULT_ERROR_CODE,
+  CREATED_CODE,
+} = require('../utils/response-codes');
 
 module.exports.getUsers = (req, res) => {
   User.find({})
@@ -14,18 +17,16 @@ module.exports.getUsers = (req, res) => {
 
 module.exports.getUser = (req, res) => {
   User.findById(req.params.id)
-    .then((user) => res.send({
-      name: user.name,
-      about: user.about,
-      avatar: user.avatar,
-      _id: user.id,
-    }))
-    .catch((err) => {
-      if (err.name === 'TypeError') {
+    .then((user) => {
+      if (!user) {
         return res.status(NOT_FOUND_ERROR_CODE).send({
           message: 'Пользователь с указанным id не найден',
         });
-      } if (err.name === 'CastError') {
+      }
+      return res.send({ user });
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
         return res.status(VALIDATION_ERROR_CODE).send({
           message: 'Передан некорректный id для поиска пользователя',
         });
@@ -40,12 +41,7 @@ module.exports.createUser = (req, res) => {
   const { name, about, avatar } = req.body;
 
   User.create({ name, about, avatar })
-    .then((user) => res.send({
-      name: user.name,
-      about: user.about,
-      avatar: user.avatar,
-      _id: user.id,
-    }))
+    .then((user) => res.status(CREATED_CODE).send({ user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         return res.status(VALIDATION_ERROR_CODE).send({
@@ -61,31 +57,19 @@ module.exports.createUser = (req, res) => {
 module.exports.updateProfile = (req, res) => {
   const { name, about } = req.body;
 
-  const checkLength = (item) => {
-    if (item) {
-      return item.length <= 2 || item.length >= 30;
-    }
-    return null;
-  };
-
-  User.findByIdAndUpdate(req.user._id, { name, about }, { new: true })
+  User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
     .then((user) => {
-      if (checkLength(name) || checkLength(about)) {
-        return res.status(VALIDATION_ERROR_CODE).send({
-          message: 'Переданы некорректные данные при обновлении профиля',
-        });
-      }
-      return res.send({
-        name: user.name,
-        about: user.about,
-        avatar: user.avatar,
-        _id: user.id,
-      });
-    })
-    .catch((err) => {
-      if (err.name === 'CastError') {
+      if (!user) {
         return res.status(NOT_FOUND_ERROR_CODE).send({
           message: 'Пользователь с указанным id не найден',
+        });
+      }
+      return res.send({ user });
+    })
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        return res.status(VALIDATION_ERROR_CODE).send({
+          message: 'Переданы некорректные данные при обновлении пользователя',
         });
       }
       return res.status(DEFAULT_ERROR_CODE).send({
@@ -96,21 +80,20 @@ module.exports.updateProfile = (req, res) => {
 
 module.exports.updateAvatar = (req, res) => {
   const { avatar } = req.body;
-  User.findByIdAndUpdate(req.user._id, { avatar }, { new: true })
-    .then((user) => res.send({
-      name: user.name,
-      about: user.about,
-      avatar: user.avatar,
-      _id: user.id,
-    }))
+
+  User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
+    .then((user) => {
+      if (!user) {
+        return res.status(NOT_FOUND_ERROR_CODE).send({
+          message: 'Пользователь с указанным id не найден',
+        });
+      }
+      return res.send({ user });
+    })
     .catch((err) => {
       if (err.name === 'ValidationError') {
         return res.status(VALIDATION_ERROR_CODE).send({
           message: 'Переданы некорректные данные при обновлении аватара',
-        });
-      } if (err.name === 'CastError') {
-        return res.status(NOT_FOUND_ERROR_CODE).send({
-          message: 'Пользователь с указанным id не найден',
         });
       }
       return res.status(DEFAULT_ERROR_CODE).send({

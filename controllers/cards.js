@@ -1,8 +1,11 @@
 const Card = require('../models/card');
 
-const NOT_FOUND_ERROR_CODE = 404;
-const VALIDATION_ERROR_CODE = 400;
-const DEFAULT_ERROR_CODE = 500;
+const {
+  NOT_FOUND_ERROR_CODE,
+  VALIDATION_ERROR_CODE,
+  DEFAULT_ERROR_CODE,
+  CREATED_CODE,
+} = require('../utils/response-codes');
 
 module.exports.getCards = (req, res) => {
   Card.find({})
@@ -16,13 +19,7 @@ module.exports.createCard = (req, res) => {
   const { name, link } = req.body;
 
   Card.create({ name, link, owner: req.user._id })
-    .then((card) => res.send({
-      _id: card._id,
-      name: card.name,
-      link: card.link,
-      owner: card.owner,
-      likes: card.likes,
-    }))
+    .then((card) => res.status(CREATED_CODE).send({ card }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         return res.status(VALIDATION_ERROR_CODE).send({
@@ -43,13 +40,7 @@ module.exports.deleteCard = (req, res) => {
           message: 'Карточка с указанным id не найдена',
         });
       }
-      return res.send({
-        _id: card._id,
-        name: card.name,
-        link: card.link,
-        owner: card.owner,
-        likes: card.likes,
-      });
+      return res.send({ card });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -71,13 +62,7 @@ module.exports.likeCard = (req, res) => {
           message: 'Передан несуществующий id карточки',
         });
       }
-      return res.send({
-        _id: card._id,
-        name: card.name,
-        link: card.link,
-        owner: card.owner,
-        likes: card.likes,
-      });
+      return res.send({ card });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -99,13 +84,7 @@ module.exports.dislikeCard = (req, res) => {
           message: 'Передан несуществующий id карточки',
         });
       }
-      return res.send({
-        _id: card._id,
-        name: card.name,
-        link: card.link,
-        owner: card.owner,
-        likes: card.likes,
-      });
+      return res.send({ card });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
