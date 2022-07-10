@@ -4,41 +4,6 @@ const NOT_FOUND_ERROR_CODE = 404;
 const VALIDATION_ERROR_CODE = 400;
 const DEFAULT_ERROR_CODE = 500;
 
-// class DefaultError extends Error {
-//   constructor(message) {
-//     super(message);
-//     this.name = 'DefaultError';
-//     this.statusCode = 500;
-//   }
-// }
-
-// class ValidationError extends Error {
-//   constructor(message) {
-//     super(message);
-//     this.name = 'ValidationError';
-//     this.statusCode = 400;
-//   }
-// }
-
-// class NotFoundError extends Error {
-//   constructor(message) {
-//     super(message);
-//     this.name = 'NotFoundError';
-//     this.statusCode = 404;
-//   }
-// }
-
-// const incorrectUserIdError = new ValidationError(
-// 'Передан некорректный id для поиска пользователя');
-// const profileUpdateError = new ValidationError(
-// 'Переданы некорректные данные при обновлении профиля');
-// const avatarUpdateError = new ValidationError(
-// 'Переданы некорректные данные при обновлении аватара');
-// const validationError = new ValidationError(
-// 'Переданы некорректные данные при создании пользователя');
-// const notFoundError = new NotFoundError('Пользователь с указанным id не найден');
-// const defaultError = new DefaultError('Произошла ошибка');
-
 module.exports.getUsers = (req, res) => {
   User.find({})
     .then((users) => res.send({ data: users }))
