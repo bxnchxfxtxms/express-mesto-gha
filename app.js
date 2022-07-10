@@ -2,7 +2,7 @@ const path = require('path');
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-// const process = require('process');
+const process = require('process');
 
 class NotFoundError extends Error {
   constructor(message) {
@@ -14,7 +14,7 @@ class NotFoundError extends Error {
 
 const linkNotFoundError = new NotFoundError('Адрес не найден');
 
-// const { PORT = 3000 } = process.env;
+const { PORT = 3000 } = process.env;
 const app = express();
 
 app.use(bodyParser.json());
@@ -48,6 +48,4 @@ app.use('/cards', require('./routes/cards'));
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-// app.listen(PORT, () => {
-//   console.log(`App listening on port ${PORT}`);
-// });
+app.listen(PORT);
