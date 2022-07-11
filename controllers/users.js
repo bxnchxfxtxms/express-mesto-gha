@@ -67,7 +67,7 @@ module.exports.updateProfile = (req, res) => {
       return res.send({ user });
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err.name === 'ValidationError' || err.name === 'CastError') {
         return res.status(VALIDATION_ERROR_CODE).send({
           message: 'Переданы некорректные данные при обновлении пользователя',
         });
@@ -91,7 +91,7 @@ module.exports.updateAvatar = (req, res) => {
       return res.send({ user });
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err.name === 'ValidationError' || err.name === 'CastError') {
         return res.status(VALIDATION_ERROR_CODE).send({
           message: 'Переданы некорректные данные при обновлении аватара',
         });
