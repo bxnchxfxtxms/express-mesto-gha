@@ -3,6 +3,7 @@ const Card = require('../models/card');
 const {
   NOT_FOUND_ERROR_CODE,
   VALIDATION_ERROR_CODE,
+  FORBIDDEN_ERROR_CODE,
   DEFAULT_ERROR_CODE,
   CREATED_CODE,
 } = require('../utils/response-codes');
@@ -33,24 +34,32 @@ module.exports.createCard = (req, res) => {
 };
 
 module.exports.deleteCard = (req, res) => {
-  Card.findByIdAndRemove(req.params.id)
-    .then((card) => {
-      if (!card) {
-        return res.status(NOT_FOUND_ERROR_CODE).send({
-          message: 'Карточка с указанным id не найдена',
+  Card.findById(req.params.id)
+    .then((data) => {
+      if (data.owner.toString() !== req.user._id) {
+        return res.status(FORBIDDEN_ERROR_CODE).send({
+          message: 'Можно удалять только свои карточки',
         });
       }
-      return res.send({ card });
-    })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        return res.status(VALIDATION_ERROR_CODE).send({
-          message: 'Переданы некорректные данные при создании/удалении карточки',
+      return Card.findByIdAndRemove(req.params.id)
+        .then((card) => {
+          if (!card) {
+            return res.status(NOT_FOUND_ERROR_CODE).send({
+              message: 'Карточка с указанным id не найдена',
+            });
+          }
+          return res.send({ card });
+        })
+        .catch((err) => {
+          if (err.name === 'CastError') {
+            return res.status(VALIDATION_ERROR_CODE).send({
+              message: 'Переданы некорректные данные при создании/удалении карточки',
+            });
+          }
+          return res.status(DEFAULT_ERROR_CODE).send({
+            message: 'На серевере произошла ошибка',
+          });
         });
-      }
-      return res.status(DEFAULT_ERROR_CODE).send({
-        message: 'На серевере произошла ошибка',
-      });
     });
 };
 
