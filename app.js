@@ -1,4 +1,5 @@
 const express = require('express');
+const path = require('path');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
@@ -18,7 +19,12 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 mongoose.connect('mongodb://localhost:27017/mestodb');
 
-app.post('/signin', login);
+app.post('/signin', celebrate({
+  body: Joi.object().keys({
+    email: Joi.string().required().email(),
+    password: Joi.string().required(),
+  }),
+}), login);
 app.post('/signup', celebrate({
   body: Joi.object().keys({
     email: Joi.string().required().email(),
@@ -36,6 +42,7 @@ app.use('/cards', require('./routes/cards'));
 // app.use((req, res) => {
 //   res.status(NOT_FOUND_ERROR_CODE).send({ message: 'Страница не найдена' });
 // });
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(errors());
 
