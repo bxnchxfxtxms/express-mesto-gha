@@ -38,7 +38,7 @@ app.use(cookieParser());
 app.use(auth);
 app.use('/users', celebrate({
   body: Joi.object().keys({
-    _id: Joi.string().length(24),
+    _id: Joi.string().min(24).max(24),
   }),
 }), require('./routes/users'));
 app.use('/cards', require('./routes/cards'));
