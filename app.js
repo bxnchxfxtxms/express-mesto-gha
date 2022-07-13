@@ -36,7 +36,11 @@ app.post('/signup', celebrate({
 }), createUser);
 app.use(cookieParser());
 app.use(auth);
-app.use('/users', require('./routes/users'));
+app.use('/users', celebrate({
+  body: Joi.object().keys({
+    _id: Joi.string().length(24),
+  }),
+}), require('./routes/users'));
 app.use('/cards', require('./routes/cards'));
 
 // app.use((req, res) => {
