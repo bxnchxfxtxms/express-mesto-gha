@@ -1,5 +1,6 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const { Joi } = require('celebrate');
 const User = require('../models/user');
 const NotFoundError = require('../errors/not-found-error');
 const ValidationError = require('../errors/validation-error');
@@ -33,6 +34,28 @@ module.exports.getUser = (req, res, next) => {
     })
     .catch(next);
 };
+
+// module.exports.createUser = (req, res) => {
+//   bcrypt.hash(req.body.password, 10)
+//     .then((hash) => User.create({
+//       email: req.body.email,
+//       password: hash,
+//       name: req.body.name,
+//       about: req.body.about,
+//       avatar: req.body.avatar,
+//     }))
+//     .then((user) => res.status(CREATED_CODE).send({ user }))
+//     .catch((err) => {
+//       if (err.name === 'ValidationError') {
+//         return res.status(VALIDATION_ERROR_CODE).send({
+//           message: 'Переданы некорректные данные при создании пользователя',
+//         });
+//       }
+//       return res.status(DEFAULT_ERROR_CODE).send({
+//         message: 'На серевере произошла ошибка',
+//       });
+//     });
+// };
 
 module.exports.createUser = (req, res) => {
   bcrypt.hash(req.body.password, 10)
