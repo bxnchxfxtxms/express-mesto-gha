@@ -21,9 +21,9 @@ module.exports.getUsers = (req, res) => {
 };
 
 module.exports.getUser = (req, res, next) => {
-  if (req.params.id.length !== 24) {
-    throw new ValidationError('Передан некорректный id для поиска пользователя');
-  }
+  // if (req.params.id.length !== 24) {
+  //   throw new ValidationError('Передан некорректный id для поиска пользователя');
+  // }
   User.findById(req.params.id)
     .then((user) => {
       if (!user) {
