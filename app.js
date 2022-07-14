@@ -26,22 +26,29 @@ app.post('/signin', celebrate({
   }),
 }), login);
 
-app.post('/signup', createUser);
+app.post('/signup', celebrate({
+  body: Joi.object().keys({
+    email: Joi.string().required().email(),
+    password: Joi.string().required(),
+    name: Joi.string().min(2).max(30),
+    about: Joi.string().min(2).max(30),
+    avatar: Joi.string().pattern(/[(http(s)?)://(www.)?a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&//=]*)/i),
+  }),
+}), createUser);
 app.use(cookieParser());
 app.use(auth);
 app.use('/users', require('./routes/users'));
 app.use('/cards', require('./routes/cards'));
 
+app.use(express.static(path.join(__dirname, 'public')));
+
 app.use((req, res) => {
   res.status(NOT_FOUND_ERROR_CODE).send({ message: 'Страница не найдена' });
 });
 
-app.use(express.static(path.join(__dirname, 'public')));
-
 app.use(errors());
 
 app.use((err, req, res, next) => {
-  console.log(err)
   res.status(err.statusCode).send(err.message);
 });
 

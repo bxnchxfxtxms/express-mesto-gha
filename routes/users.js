@@ -15,7 +15,7 @@ router.get('/', getUsers);
 router.get('/:id', celebrate({
   params: Joi.object().keys({
     id: Joi.string().alphanum().length(24),
-  }).unknown(true),
+  }),
 }), getUser);
 
 router.patch('/me', celebrate({
