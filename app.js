@@ -37,7 +37,11 @@ app.post('/signup', celebrate({
 }), createUser);
 app.use(cookieParser());
 app.use(auth);
-app.use('/users', require('./routes/users'));
+app.use('/users', celebrate({
+  params: Joi.object().keys({
+    id: Joi.string().alphanum().length(24),
+  }),
+}), require('./routes/users'));
 app.use('/cards', require('./routes/cards'));
 
 // app.use((req, res) => {
@@ -47,9 +51,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(errors());
 
-// app.use((err, req, res, next) => {
-//   console.log(err)
-//   res.status(err.statusCode).send(err.message);
-// });
+app.use((err, req, res, next) => {
+  console.log(err)
+  res.status(err.statusCode).send(err.message);
+});
 
 app.listen(PORT);
