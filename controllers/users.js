@@ -15,7 +15,7 @@ const {
 
 module.exports.getUsers = (req, res) => {
   User.find({})
-    .then((users) => res.send({ data: users }))
+    .then((users) => res.send({ users }))
     .catch(() => res.status(DEFAULT_ERROR_CODE).send({
       message: 'На серевере произошла ошибка',
     }));
@@ -51,15 +51,12 @@ module.exports.createUser = (req, res, next) => {
       if (err.code === 11000) {
         throw new ConflictError('Адрес электронной почты уже занят');
       }
-      // if (err.name === 'ValidationError') {
-      //   return res.status(VALIDATION_ERROR_CODE).send({
-      //     message: 'Переданы некорректные данные при создании пользователя',
-      //   });
-      // }
-      return res.status(DEFAULT_ERROR_CODE).send({
-        message: 'На серевере произошла ошибка',
-      });
     })
+    // if (err.name === 'ValidationError') {
+    //   return res.status(VALIDATION_ERROR_CODE).send({
+    //     message: 'Переданы некорректные данные при создании пользователя',
+    //   });
+    // }
     .catch(next);
 };
 
