@@ -15,7 +15,7 @@ const {
 
 module.exports.getUsers = (req, res) => {
   User.find({})
-    .then((users) => res.send({ users }))
+    .then((users) => res.status(200).send({ users }))
     .catch(() => res.status(DEFAULT_ERROR_CODE).send({
       message: 'На серевере произошла ошибка',
     }));
@@ -27,7 +27,7 @@ module.exports.getUser = (req, res, next) => {
       if (!user) {
         throw new NotFoundError('Пользователь с указанным id не найден');
       }
-      return res.send({ user });
+      return res.status(200).send({ user });
     })
     .catch(next);
 };
@@ -71,7 +71,7 @@ module.exports.updateProfile = (req, res) => {
       if (!user) {
         throw new NotFoundError('Пользователь с указанным id не найден');
       }
-      return res.send({ user });
+      return res.status(200).send({ user });
     })
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
