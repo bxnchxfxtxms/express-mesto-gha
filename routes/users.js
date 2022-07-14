@@ -9,13 +9,25 @@ const {
 } = require('../controllers/users');
 
 router.get('/me', getCurrentUser);
+
 router.get('/', getUsers);
+
 router.get('/:id', celebrate({
   params: Joi.object().keys({
     id: Joi.string().alphanum().length(24),
   }),
 }), getUser);
-router.patch('/me', updateProfile);
+
+router.patch('/me', celebrate({
+  params: Joi.object().keys({
+    id: Joi.string().alphanum().length(24),
+  }),
+  body: Joi.object().keys({
+    name: Joi.string().min(2).max(30),
+    about: Joi.string().min(2).max(30),
+  }),
+}), updateProfile);
+
 router.patch('/me/avatar', updateAvatar);
 
 module.exports = router;
