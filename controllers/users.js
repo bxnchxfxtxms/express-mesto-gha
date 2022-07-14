@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const NotFoundError = require('../errors/not-found-error');
 const ValidationError = require('../errors/validation-error');
+const ConflictError = require('../errors/conflict-error');
 
 const {
   VALIDATION_ERROR_CODE,
@@ -31,7 +32,7 @@ module.exports.getUser = (req, res, next) => {
     .catch(next);
 };
 
-module.exports.createUser = (req, res) => {
+module.exports.createUser = (req, res, next) => {
   bcrypt.hash(req.body.password, 10)
     .then((hash) => User.create({
       email: req.body.email,
@@ -45,17 +46,21 @@ module.exports.createUser = (req, res) => {
       name: user.name,
       about: user.about,
       avatar: user.avatar,
-    }));
-    // .catch((err) => {
-    //   if (err.name === 'ValidationError') {
-    //     return res.status(VALIDATION_ERROR_CODE).send({
-    //       message: 'Переданы некорректные данные при создании пользователя',
-    //     });
-    //   }
-    //   return res.status(DEFAULT_ERROR_CODE).send({
-    //     message: 'На серевере произошла ошибка',
-    //   });
-    // });
+    }))
+    .catch((err) => {
+      if (err.code === 11000) {
+        throw new ConflictError('Адрес электронной почты уже занят');
+      }
+      // if (err.name === 'ValidationError') {
+      //   return res.status(VALIDATION_ERROR_CODE).send({
+      //     message: 'Переданы некорректные данные при создании пользователя',
+      //   });
+      // }
+      return res.status(DEFAULT_ERROR_CODE).send({
+        message: 'На серевере произошла ошибка',
+      });
+    })
+    .catch(next);
 };
 
 module.exports.updateProfile = (req, res) => {
