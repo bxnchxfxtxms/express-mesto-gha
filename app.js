@@ -25,6 +25,7 @@ app.post('/signin', celebrate({
     password: Joi.string().required(),
   }),
 }), login);
+
 app.post('/signup', celebrate({
   body: Joi.object().keys({
     email: Joi.string().required().email(),
@@ -46,8 +47,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(errors());
 
-app.use((err, req, res, next) => {
-  res.status(err.statusCode).send(err.message);
-});
+// app.use((err, req, res, next) => {
+//   console.log(err)
+//   res.status(err.statusCode).send(err.message);
+// });
 
 app.listen(PORT);
