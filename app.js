@@ -37,16 +37,13 @@ app.post('/signup', celebrate({
 }), createUser);
 app.use(cookieParser());
 app.use(auth);
-app.use('/users', celebrate({
-  params: Joi.object().keys({
-    id: Joi.string().alphanum().length(24),
-  }),
-}), require('./routes/users'));
+app.use('/users', require('./routes/users'));
 app.use('/cards', require('./routes/cards'));
 
-// app.use((req, res) => {
-//   res.status(NOT_FOUND_ERROR_CODE).send({ message: 'Страница не найдена' });
-// });
+app.use((req, res) => {
+  res.status(NOT_FOUND_ERROR_CODE).send({ message: 'Страница не найдена' });
+});
+
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(errors());
