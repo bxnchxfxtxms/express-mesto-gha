@@ -49,8 +49,8 @@ app.use((req, res) => {
 app.use(errors());
 
 app.use((err, req, res, next) => {
-  console.log(err)
-  res.status(err.statusCode).send(err.message);
+  console.log('Пиздец на хуй блядь!');
+  res.status(err.statusCode).send({ message: err.message });
 });
 
 app.listen(PORT);
