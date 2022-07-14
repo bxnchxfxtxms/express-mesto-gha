@@ -26,15 +26,7 @@ app.post('/signin', celebrate({
   }),
 }), login);
 
-app.post('/signup', celebrate({
-  body: Joi.object().keys({
-    email: Joi.string().required().email(),
-    password: Joi.string().required(),
-    name: Joi.string().min(2).max(30),
-    about: Joi.string().min(2).max(30),
-    avatar: Joi.string().pattern(/[(http(s)?)://(www.)?a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&//=]*)/i),
-  }),
-}), createUser);
+app.post('/signup', createUser);
 app.use(cookieParser());
 app.use(auth);
 app.use('/users', require('./routes/users'));
