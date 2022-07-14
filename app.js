@@ -50,6 +50,7 @@ app.use(errors());
 
 app.use((err, req, res, next) => {
   console.log('Пиздец на хуй блядь!');
+  console.log(err);
   res.status(err.statusCode).send({ message: err.message });
 });
 
