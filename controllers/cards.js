@@ -79,7 +79,7 @@ module.exports.deleteCard = (req, res, next) => {
     })
     .then((card) => Card.findByIdAndRemove(card.id)
       .then((removedCard) => {
-        res.send({ removedCard });
+        res.status(200).send({ removedCard });
       }))
     .catch(next);
 };
@@ -92,7 +92,7 @@ module.exports.likeCard = (req, res) => {
           message: 'Передан несуществующий id карточки',
         });
       }
-      return res.send({ card });
+      return res.status(200).send({ card });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -114,7 +114,7 @@ module.exports.dislikeCard = (req, res) => {
           message: 'Передан несуществующий id карточки',
         });
       }
-      return res.send({ card });
+      return res.status(200).send({ card });
     })
     .catch((err) => {
       if (err.name === 'CastError') {

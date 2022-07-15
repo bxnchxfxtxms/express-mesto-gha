@@ -112,14 +112,28 @@ module.exports.updateAvatar = (req, res) => {
     });
 };
 
+// module.exports.login = (req, res) => {
+//   const { email, password } = req.body;
+
+//   User.findUserByCredentials(email, password)
+//     .then((user) => {
+//       const token = jwt.sign({ _id: user._id }, '1qa2ws3ed4rf5tg6yh', { expiresIn: '7d' });
+//       res.send({ token });
+//       res.cookie('jwt', token);
+//     })
+//     .catch((err) => {
+//       res.status(UNAUTHORIZED_ERROR_CODE).send({ message: err.message });
+//     });
+// };
+
 module.exports.login = (req, res) => {
   const { email, password } = req.body;
 
   User.findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign({ _id: user._id }, '1qa2ws3ed4rf5tg6yh', { expiresIn: '7d' });
-      res.send({ token });
-      res.cookie('jwt', token);
+      // res.send({ token });
+      res.cookie('jwt', token, { httpOnly: true });
     })
     .catch((err) => {
       res.status(UNAUTHORIZED_ERROR_CODE).send({ message: err.message });
