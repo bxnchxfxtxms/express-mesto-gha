@@ -134,7 +134,7 @@ module.exports.login = (req, res) => {
       const token = jwt.sign({ _id: user._id }, '1qa2ws3ed4rf5tg6yh', { expiresIn: '7d' });
       // res.send({ token });
       // console.log('мы тута')
-      res.cookie('jwt', token, { httpOnly: true }).end();
+      res.cookie('jwt', token, { httpOnly: true }).send({ message: 'Авторизация прошла успешно!' });
     })
     .catch((err) => {
       res.status(UNAUTHORIZED_ERROR_CODE).send({ message: err.message });
