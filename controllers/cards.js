@@ -22,16 +22,9 @@ module.exports.createCard = (req, res) => {
 
   Card.create({ name, link, owner: req.user._id })
     .then((card) => res.status(CREATED_CODE).send({ card }))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        return res.status(VALIDATION_ERROR_CODE).send({
-          message: 'Переданы некорректные данные при создании/удалении карточки',
-        });
-      }
-      return res.status(DEFAULT_ERROR_CODE).send({
-        message: 'На серевере произошла ошибка',
-      });
-    });
+    .catch(() => res.status(DEFAULT_ERROR_CODE).send({
+      message: 'На серевере произошла ошибка',
+    }));
 };
 
 module.exports.deleteCard = (req, res, next) => {
