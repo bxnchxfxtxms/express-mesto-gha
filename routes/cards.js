@@ -25,6 +25,10 @@ router.put('/:id/likes', celebrate({
     id: Joi.string().alphanum().length(24),
   }),
 }), likeCard);
-router.delete('/:id/likes', dislikeCard);
+router.delete('/:id/likes', celebrate({
+  params: Joi.object().keys({
+    id: Joi.string().alphanum().length(24),
+  }),
+}), dislikeCard);
 
 module.exports = router;
