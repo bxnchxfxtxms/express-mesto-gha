@@ -63,9 +63,9 @@ module.exports.createUser = (req, res, next) => {
 module.exports.updateProfile = (req, res) => {
   const { name, about } = req.body;
 
-  if (req.params.id.length !== 24) {
-    throw new ValidationError('Передан некорректный id при обновлении данных пользователя');
-  }
+  // if (req.params.id.length !== 24) {
+  //   throw new ValidationError('Передан некорректный id при обновлении данных пользователя');
+  // }
   User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
     .then((user) => {
       if (!user) {
@@ -112,28 +112,12 @@ module.exports.updateAvatar = (req, res) => {
     });
 };
 
-// module.exports.login = (req, res) => {
-//   const { email, password } = req.body;
-
-//   User.findUserByCredentials(email, password)
-//     .then((user) => {
-//       const token = jwt.sign({ _id: user._id }, '1qa2ws3ed4rf5tg6yh', { expiresIn: '7d' });
-//       res.send({ token });
-//       res.cookie('jwt', token);
-//     })
-//     .catch((err) => {
-//       res.status(UNAUTHORIZED_ERROR_CODE).send({ message: err.message });
-//     });
-// };
-
 module.exports.login = (req, res) => {
   const { email, password } = req.body;
 
   User.findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign({ _id: user._id }, '1qa2ws3ed4rf5tg6yh', { expiresIn: '7d' });
-      // res.send({ token });
-      // console.log('мы тута')
       res.cookie('jwt', token, { httpOnly: true }).send({ message: 'Авторизация прошла успешно!' });
     })
     .catch((err) => {
