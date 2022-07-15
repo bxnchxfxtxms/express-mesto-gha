@@ -4,6 +4,7 @@ const User = require('../models/user');
 const NotFoundError = require('../errors/not-found-error');
 const ValidationError = require('../errors/validation-error');
 const ConflictError = require('../errors/conflict-error');
+const UnauthorizedError = require('../errors/unauthorized-error');
 
 const {
   VALIDATION_ERROR_CODE,
@@ -13,7 +14,7 @@ const {
   CREATED_CODE,
 } = require('../utils/response-codes');
 
-module.exports.getUsers = (req, res) => {
+module.exports.getUsers = (req, res, next) => {
   User.find({})
     .then((users) => res.status(200).send({ users }))
     .catch(() => res.status(DEFAULT_ERROR_CODE).send({
@@ -52,11 +53,6 @@ module.exports.createUser = (req, res, next) => {
         throw new ConflictError('Адрес электронной почты уже занят');
       }
     })
-    // if (err.name === 'ValidationError') {
-    //   return res.status(VALIDATION_ERROR_CODE).send({
-    //     message: 'Переданы некорректные данные при создании пользователя',
-    //   });
-    // }
     .catch(next);
 };
 
@@ -82,28 +78,17 @@ module.exports.updateProfile = (req, res) => {
     });
 };
 
-module.exports.updateAvatar = (req, res) => {
+module.exports.updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
 
   User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
     .then((user) => {
       if (!user) {
-        return res.status(NOT_FOUND_ERROR_CODE).send({
-          message: 'Пользователь с указанным id не найден',
-        });
+        throw new NotFoundError('Пользователь с указанным id не найден');
       }
       return res.send({ user });
     })
-    .catch((err) => {
-      if (err.name === 'ValidationError' || err.name === 'CastError') {
-        return res.status(VALIDATION_ERROR_CODE).send({
-          message: 'Переданы некорректные данные при обновлении аватара',
-        });
-      }
-      return res.status(DEFAULT_ERROR_CODE).send({
-        message: 'На серевере произошла ошибка',
-      });
-    });
+    .catch(next);
 };
 
 module.exports.login = (req, res) => {
@@ -112,20 +97,18 @@ module.exports.login = (req, res) => {
   User.findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign({ _id: user._id }, '1qa2ws3ed4rf5tg6yh', { expiresIn: '7d' });
-      res.cookie('jwt', token, { httpOnly: true }).send({ message: 'Авторизация прошла успешно!' });
+      res.cookie('jwt', token, { httpOnly: true, maxAge: 3600000 * 24 * 7 }).send({ message: 'Авторизация прошла успешно!' });
     })
     .catch((err) => {
       res.status(UNAUTHORIZED_ERROR_CODE).send({ message: err.message });
     });
 };
 
-module.exports.getCurrentUser = (req, res) => {
+module.exports.getCurrentUser = (req, res, next) => {
   User.findById(req.user._id)
     .then((user) => {
       if (!user) {
-        return res.status(NOT_FOUND_ERROR_CODE).send({
-          message: 'Пользователь с указанным id не найден',
-        });
+        throw new NotFoundError('Пользователь с указанным id не найден');
       }
       return res.send({ user });
     })
@@ -138,5 +121,6 @@ module.exports.getCurrentUser = (req, res) => {
       return res.status(DEFAULT_ERROR_CODE).send({
         message: 'На серевере произошла ошибка',
       });
-    });
+    })
+    .catch(next);
 };
