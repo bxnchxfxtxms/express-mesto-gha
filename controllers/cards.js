@@ -17,14 +17,15 @@ module.exports.getCards = (req, res) => {
     }));
 };
 
-module.exports.createCard = (req, res) => {
+module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
 
   Card.create({ name, link, owner: req.user._id })
     .then((card) => res.status(CREATED_CODE).send({ card }))
-    .catch(() => res.status(DEFAULT_ERROR_CODE).send({
-      message: 'На серевере произошла ошибка',
-    }));
+    // .catch(() => res.status(DEFAULT_ERROR_CODE).send({
+    //   message: 'На серевере произошла ошибка',
+    // }));
+    .catch(next);
 };
 
 module.exports.deleteCard = (req, res, next) => {
