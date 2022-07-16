@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const NotFoundError = require('../errors/not-found-error');
 const ConflictError = require('../errors/conflict-error');
+const ValidationError = require('../errors/validation-error');
 
 const {
   CREATED_CODE,
@@ -10,7 +11,7 @@ const {
 
 module.exports.getUsers = (req, res, next) => {
   User.find({})
-    .then((users) => res.status(200).send({ users }))
+    .then((users) => res.send({ users }))
     .catch(next);
 };
 
@@ -20,7 +21,7 @@ module.exports.getUser = (req, res, next) => {
       if (!user) {
         throw new NotFoundError('Пользователь с указанным id не найден');
       }
-      return res.status(200).send({ user });
+      return res.send({ user });
     })
     .catch(next);
 };
@@ -44,8 +45,12 @@ module.exports.createUser = (req, res, next) => {
       if (err.code === 11000) {
         throw new ConflictError('Адрес электронной почты уже занят');
       }
-    })
-    .catch(next);
+      if (err.name === 'ValidationError') {
+        throw new ValidationError('Переданы некорректные данные при создании пользователя');
+      } else {
+        next(err);
+      }
+    });
 };
 
 module.exports.updateProfile = (req, res, next) => {
@@ -58,7 +63,13 @@ module.exports.updateProfile = (req, res, next) => {
       }
       return res.status(200).send({ user });
     })
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        throw new ValidationError('Переданы некорректные данные при редактировании профиля');
+      } else {
+        next(err);
+      }
+    });
 };
 
 module.exports.updateAvatar = (req, res, next) => {
@@ -71,7 +82,13 @@ module.exports.updateAvatar = (req, res, next) => {
       }
       return res.send({ user });
     })
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        throw new ValidationError('Переданы некорректные данные при редактировании аватара');
+      } else {
+        next(err);
+      }
+    });
 };
 
 module.exports.login = (req, res, next) => {
