@@ -22,9 +22,6 @@ module.exports.createCard = (req, res, next) => {
 
   Card.create({ name, link, owner: req.user._id })
     .then((card) => res.status(CREATED_CODE).send({ card }))
-    // .catch(() => res.status(DEFAULT_ERROR_CODE).send({
-    //   message: 'На серевере произошла ошибка',
-    // }));
     .catch(next);
 };
 
@@ -53,9 +50,7 @@ module.exports.likeCard = (req, res) => {
   Card.findByIdAndUpdate(req.params.id, { $addToSet: { likes: req.user._id } }, { new: true })
     .then((card) => {
       if (!card) {
-        return res.status(NOT_FOUND_ERROR_CODE).send({
-          message: 'Передан несуществующий id карточки',
-        });
+        throw new NotFoundError('Карточка с указанным id не найдена');
       }
       return res.status(200).send({ card });
     })

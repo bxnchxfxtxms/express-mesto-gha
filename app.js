@@ -48,12 +48,6 @@ app.use((req, res) => {
 
 app.use(errors());
 
-// app.use((err, req, res, next) => {
-//   console.log('Пиздец на хуй блядь!');
-//   console.log(err);
-//   res.status(err.statusCode).send({ message: err.message });
-// });
-
 app.use((err, req, res, next) => {
   const { statusCode = 500, message } = err;
   res

@@ -17,9 +17,7 @@ const {
 module.exports.getUsers = (req, res, next) => {
   User.find({})
     .then((users) => res.status(200).send({ users }))
-    .catch(() => res.status(DEFAULT_ERROR_CODE).send({
-      message: 'На серевере произошла ошибка',
-    }));
+    .catch(next);
 };
 
 module.exports.getUser = (req, res, next) => {
@@ -56,7 +54,7 @@ module.exports.createUser = (req, res, next) => {
     .catch(next);
 };
 
-module.exports.updateProfile = (req, res) => {
+module.exports.updateProfile = (req, res, next) => {
   const { name, about } = req.body;
 
   User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
@@ -66,16 +64,7 @@ module.exports.updateProfile = (req, res) => {
       }
       return res.status(200).send({ user });
     })
-    .catch((err) => {
-      if (err.name === 'ValidationError' || err.name === 'CastError') {
-        return res.status(VALIDATION_ERROR_CODE).send({
-          message: 'Переданы некорректные данные при обновлении пользователя',
-        });
-      }
-      return res.status(DEFAULT_ERROR_CODE).send({
-        message: 'На серевере произошла ошибка',
-      });
-    });
+    .catch(next);
 };
 
 module.exports.updateAvatar = (req, res, next) => {
@@ -111,16 +100,6 @@ module.exports.getCurrentUser = (req, res, next) => {
         throw new NotFoundError('Пользователь с указанным id не найден');
       }
       return res.send({ user });
-    })
-    .catch((err) => {
-      if (err.name === 'ValidationError' || err.name === 'CastError') {
-        return res.status(VALIDATION_ERROR_CODE).send({
-          message: 'Переданы некорректные данные при поиске пользователя',
-        });
-      }
-      return res.status(DEFAULT_ERROR_CODE).send({
-        message: 'На серевере произошла ошибка',
-      });
     })
     .catch(next);
 };
