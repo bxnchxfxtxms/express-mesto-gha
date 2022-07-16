@@ -3,9 +3,6 @@ const ForbiddenError = require('../errors/forbidden-error');
 const NotFoundError = require('../errors/not-found-error');
 
 const {
-  NOT_FOUND_ERROR_CODE,
-  VALIDATION_ERROR_CODE,
-  DEFAULT_ERROR_CODE,
   CREATED_CODE,
 } = require('../utils/response-codes');
 

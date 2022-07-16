@@ -76,17 +76,15 @@ module.exports.updateAvatar = (req, res, next) => {
     .catch(next);
 };
 
-module.exports.login = (req, res) => {
+module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
 
   User.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, '1qa2ws3ed4rf5tg6yh', { expiresIn: '7d' });
+      const token = jwt.sign({ _id: user._id }, '1qa2ws3ed4rf5tg6y', { expiresIn: '7d' });
       res.cookie('jwt', token, { httpOnly: true, maxAge: 3600000 * 24 * 7 }).send({ message: 'Авторизация прошла успешно!' });
     })
-    .catch((err) => {
-      res.status(UNAUTHORIZED_ERROR_CODE).send({ message: err.message });
-    });
+    .catch(next);
 };
 
 module.exports.getCurrentUser = (req, res, next) => {

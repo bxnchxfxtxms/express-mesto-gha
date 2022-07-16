@@ -1,26 +1,24 @@
 const jwt = require('jsonwebtoken');
-const {
-  UNAUTHORIZED_ERROR_CODE,
-} = require('../utils/response-codes');
+const UnauthorizedError = require('../errors/unauthorized-error');
+
+const unauthorizedError = new UnauthorizedError('Необходима авторизация');
 
 module.exports = (req, res, next) => {
   if (!req.cookies.jwt) {
     return res
-      .status(UNAUTHORIZED_ERROR_CODE)
-      .send({ message: 'Где куки, бля?' });
+      .status(unauthorizedError.statusCode)
+      .send({ message: unauthorizedError.message });
   }
 
   const token = req.cookies.jwt;
   let payload;
 
-  payload = jwt.verify(token, '1qa2ws3ed4rf5tg6yh');
-
   try {
     payload = jwt.verify(token, '1qa2ws3ed4rf5tg6yh');
   } catch (err) {
     return res
-      .status(UNAUTHORIZED_ERROR_CODE)
-      .send({ message: 'Авторизуйся, пидор!' });
+      .status(unauthorizedError.statusCode)
+      .send({ message: unauthorizedError.message });
   }
 
   req.user = payload;
