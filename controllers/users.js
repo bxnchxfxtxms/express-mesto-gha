@@ -43,10 +43,10 @@ module.exports.createUser = (req, res, next) => {
     }))
     .catch((err) => {
       if (err.code === 11000) {
-        throw new ConflictError('Адрес электронной почты уже занят');
+        next(new ConflictError('Адрес электронной почты уже занят'));
       }
       if (err.name === 'ValidationError') {
-        throw new ValidationError('Переданы некорректные данные при создании пользователя');
+        next(new ValidationError('Переданы некорректные данные при создании пользователя'));
       } else {
         next(err);
       }

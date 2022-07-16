@@ -33,8 +33,8 @@ app.post('/signup', celebrate({
     password: Joi.string().required(),
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
-    // avatar: Joi.string().pattern(/[(http(s)?)://(www.)?a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&//=]*)/i),
-    avatar: Joi.string().pattern(httpRegex),
+    avatar: Joi.string().pattern(/[(http(s)?)://(www.)?a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&//=]*)/i),
+    // avatar: Joi.string().pattern(httpRegex),
   }),
 }), createUser);
 app.use(cookieParser());
@@ -49,6 +49,7 @@ app.use((req, res) => {
 app.use(errors());
 
 app.use((err, req, res, next) => {
+  console.log('Чё за нах?')
   const { statusCode = 500, message } = err;
   res
     .status(statusCode)
