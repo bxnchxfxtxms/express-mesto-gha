@@ -2,15 +2,11 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const NotFoundError = require('../errors/not-found-error');
-const ValidationError = require('../errors/validation-error');
 const ConflictError = require('../errors/conflict-error');
 const UnauthorizedError = require('../errors/unauthorized-error');
 
 const {
-  VALIDATION_ERROR_CODE,
   UNAUTHORIZED_ERROR_CODE,
-  NOT_FOUND_ERROR_CODE,
-  DEFAULT_ERROR_CODE,
   CREATED_CODE,
 } = require('../utils/response-codes');
 

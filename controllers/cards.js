@@ -9,12 +9,10 @@ const {
   CREATED_CODE,
 } = require('../utils/response-codes');
 
-module.exports.getCards = (req, res) => {
+module.exports.getCards = (req, res, next) => {
   Card.find({})
     .then((cards) => res.send({ data: cards }))
-    .catch(() => res.status(DEFAULT_ERROR_CODE).send({
-      message: 'На серевере произошла ошибка',
-    }));
+    .catch(next);
 };
 
 module.exports.createCard = (req, res, next) => {
@@ -46,7 +44,7 @@ module.exports.deleteCard = (req, res, next) => {
     .catch(next);
 };
 
-module.exports.likeCard = (req, res) => {
+module.exports.likeCard = (req, res, next) => {
   Card.findByIdAndUpdate(req.params.id, { $addToSet: { likes: req.user._id } }, { new: true })
     .then((card) => {
       if (!card) {
@@ -54,36 +52,16 @@ module.exports.likeCard = (req, res) => {
       }
       return res.status(200).send({ card });
     })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        return res.status(VALIDATION_ERROR_CODE).send({
-          message: 'Переданы некорректные данные для постановки/снятия лайка',
-        });
-      }
-      return res.status(DEFAULT_ERROR_CODE).send({
-        message: 'На серевере произошла ошибка',
-      });
-    });
+    .catch(next);
 };
 
-module.exports.dislikeCard = (req, res) => {
+module.exports.dislikeCard = (req, res, next) => {
   Card.findByIdAndUpdate(req.params.id, { $pull: { likes: req.user._id } }, { new: true })
     .then((card) => {
       if (!card) {
-        return res.status(NOT_FOUND_ERROR_CODE).send({
-          message: 'Передан несуществующий id карточки',
-        });
+        throw new NotFoundError('Передан несуществующий id карточки');
       }
       return res.status(200).send({ card });
     })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        return res.status(VALIDATION_ERROR_CODE).send({
-          message: 'Переданы некорректные данные для постановки/снятия лайка',
-        });
-      }
-      return res.status(DEFAULT_ERROR_CODE).send({
-        message: 'На серевере произошла ошибка',
-      });
-    });
+    .catch(next);
 };
