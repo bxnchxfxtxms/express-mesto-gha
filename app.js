@@ -5,12 +5,13 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const { celebrate, Joi, errors } = require('celebrate');
 const auth = require('./middlewares/auth');
-const { NOT_FOUND_ERROR_CODE } = require('./utils/response-codes');
+const NotFoundError = require('./errors/not-found-error');
 const {
   login,
   createUser,
 } = require('./controllers/users');
 
+const notFoundError = new NotFoundError('Страница не найдена');
 const { PORT = 3000 } = process.env;
 const app = express();
 
@@ -43,13 +44,12 @@ app.use('/cards', require('./routes/cards'));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use((req, res) => {
-  res.status(NOT_FOUND_ERROR_CODE).send({ message: 'Страница не найдена' });
+  res.status(notFoundError.statusCode).send({ message: notFoundError.message });
 });
 
 app.use(errors());
 
 app.use((err, req, res, next) => {
-  console.log(err.name)
   const { statusCode = 500, message } = err;
   res
     .status(statusCode)
