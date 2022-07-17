@@ -11,7 +11,6 @@ const {
   createUser,
 } = require('./controllers/users');
 
-const notFoundError = new NotFoundError('Страница не найдена');
 const { PORT = 3000 } = process.env;
 const app = express();
 
@@ -33,7 +32,6 @@ app.post('/signup', celebrate({
     password: Joi.string().required(),
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
-    // avatar: Joi.string().pattern(/[(http(s)?)://(www.)?a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&//=]*)/i),
     avatar: Joi.string().pattern(httpRegex),
   }),
 }), createUser);
@@ -42,8 +40,8 @@ app.use(auth);
 app.use('/users', require('./routes/users'));
 app.use('/cards', require('./routes/cards'));
 
-app.use((req, res) => {
-  res.status(notFoundError.statusCode).send({ message: notFoundError.message });
+app.use(() => {
+  throw new NotFoundError('Страница не найдена');
 });
 
 app.use(errors());
@@ -57,6 +55,7 @@ app.use((err, req, res, next) => {
         ? 'На сервере произошла ошибка'
         : message,
     });
+  next();
 });
 
 app.listen(PORT);
