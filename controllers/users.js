@@ -44,8 +44,7 @@ module.exports.createUser = (req, res, next) => {
     .catch((err) => {
       if (err.code === 11000) {
         next(new ConflictError('Адрес электронной почты уже занят'));
-      }
-      if (err.name === 'ValidationError') {
+      } else if (err.name === 'ValidationError') {
         next(new ValidationError('Переданы некорректные данные при создании пользователя'));
       } else {
         next(err);
@@ -65,7 +64,7 @@ module.exports.updateProfile = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        throw new ValidationError('Переданы некорректные данные при редактировании профиля');
+        next(new ValidationError('Переданы некорректные данные при редактировании профиля'));
       } else {
         next(err);
       }
@@ -84,7 +83,7 @@ module.exports.updateAvatar = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        throw new ValidationError('Переданы некорректные данные при редактировании аватара');
+        next(new ValidationError('Переданы некорректные данные при редактировании аватара'));
       } else {
         next(err);
       }
